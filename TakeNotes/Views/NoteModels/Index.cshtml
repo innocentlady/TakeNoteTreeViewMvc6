@@ -1,0 +1,72 @@
+﻿@model IEnumerable<TakeNotes.Models.NoteModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+<p>
+    <a asp-action="Create">Note-Parent Oluştur</a>
+</p>
+
+<form id="addChildForm" method="get" action="@Url.Action("Create")">
+    <input type="hidden" name="parentId" value="" />
+    @foreach (var x in Model.Where(f => f.ParentId == null))
+    {
+        <li>
+            <button type="button" class="btn btn-primary btn-xs btn-add-child" data-parent-id="@x.Id">+</button>
+            @Html.DisplayFor(f => x.Title)
+            <td>
+                <a asp-action="Edit" asp-route-id="@x.Id">Edit</a>
+                <a asp-action="Details" asp-route-id="@x.Id">Details</a>
+                <a asp-action="Delete" asp-route-id="@x.Id">Delete</a>
+            </td>
+
+            <ul class="child-notes">
+                @foreach (var y in Model.Where(c => c.ParentId == x.Id))
+                {
+                    <li>
+                        <button type="button" class="btn btn-primary btn-xs btn-add-child" data-parent-id="@y.Id">+</button>
+                        @Html.DisplayFor(c => y.Title)
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@y.Id">Edit</a>
+                            <a asp-action="Details" asp-route-id="@y.Id">Details</a>
+                            <a asp-action="Delete" asp-route-id="@y.Id">Delete</a>
+                        </td>
+                        <ul class="child-notes">
+                            @foreach (var z in Model.Where(c => c.ParentId == y.Id))
+                            {
+                                <li>
+                                    <button type="button" class="btn btn-primary btn-xs btn-add-child" data-parent-id="@z.Id">+</button>
+                                    @Html.DisplayFor(c => z.Title)
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@z.Id">Edit</a>
+                                        <a asp-action="Details" asp-route-id="@z.Id">Details</a>
+                                        <a asp-action="Delete" asp-route-id="@z.Id">Delete</a>
+                                    </td>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </li>
+    }
+
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // 'Add Child' button click event
+        $('body').on('click', 'button.btn-add-child', function () {
+            // Get the parent node ID
+            var parentId = $(this).data('parent-id');
+
+            // Set the parent ID value in the form
+            $('#addChildForm input[name=parentId]').val(parentId);
+
+            // Submit the form to create a new child node
+            $('#addChildForm').submit();
+        });
+    });
+</script>
